@@ -1,7 +1,6 @@
 var mongoose = require('mongoose');
-var uniqueValidator = require('mongoose-unique-validator'); 
-
 var Schema  = mongoose.Schema;
+var uniqueValidator = require('mongoose-unique-validator'); 
 
 // Para controlar los roles de usuario que la app permitirá, restringe a los roles que yo desee
 var rolesPermitidos = {

@@ -4,6 +4,7 @@ var mongoose =require('mongoose');
 var bodyParser = require("body-parser");
 
 
+
 // Inicializar variables
 var app = express();
 
@@ -23,13 +24,21 @@ mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, res) =
 // Importar rutas
 var appRoutes = require('./routes/app');
 var usuarioRoutes = require('./routes/usuario')
-var loginRoutes = require('./routes/login')
+var loginRoutes = require('./routes/login');
+var hospitalRoutes = require('./routes/hospital-route');
+var medicoRoutes = require('./routes/medico-route');
+var busquedaGeneralRoutes = require('./routes/busqueda-general-route');
+var uploadFile = require('./routes/upload-route');
 
 
 // Middleware
 app.use('/usuario', usuarioRoutes); 
-app.use('/login', loginRoutes)
-app.use('/', appRoutes);  
+app.use('/hospital', hospitalRoutes); 
+app.use('/busqueda', busquedaGeneralRoutes); 
+app.use('/upload', uploadFile);
+app.use('/medico', medicoRoutes);
+app.use('/login', loginRoutes);
+app.use('/', appRoutes); 
 
 // escuchar peticiones
 app.listen(3000, () => {

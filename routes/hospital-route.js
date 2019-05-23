@@ -1,134 +1,128 @@
 var express = require("express");
 var app = express();
-var UsuarioSchema = require("../models/usuario");
-var bcrypt = require('bcryptjs');
-var jwt = require("jsonwebtoken");
-var SEED = require('../config/config').SEED;
+
+var HospitalSchema = require("../models/hospital-model");
 
 var mdAutenticacion = require('../middlewares/autenticacion')
 
 
-// Obtener todos los usuarios
-app.get("/", (req, res, next) => {
+// Obtener todos los Hospitales
+app.get("/",  (req, res, next) => {
 
   var inicio = req.query.inicio || 0;
   inicio = Number(inicio);
 
-  UsuarioSchema.find({}, "nombre email img role")
+  HospitalSchema.find({})
   .skip(inicio) // para que retorne desde el valor indicado
   .limit(5) // retornara de 5 en 5
-  .exec((err, usuarios) => {
+  .populate('usuario', 'nombre email')
+  .exec((err, hospitales) => {
     if (err) {
       return res.status(500).json({
         ok: false,
-        mensaje: "Error cargando usuarios desde la BBDD",
+        mensaje: "Error cargando los hospitales desde la BBDD",
         errors: err
       });
     } 
 
-    UsuarioSchema.count('', (err, conteo) => {
+    HospitalSchema.count('', (err, conteo)=>{
       res.status(200).json({
         ok: true,
-        usuarios: usuarios,
+        hospitales: hospitales,
         totalRegistros: conteo
       });
-
     })
   });
 });
 
-
-// Actualizar usuario
-app.put('/:id', mdAutenticacion.verificarToken, (req, res ) => { 
+// Actualizar Hospital
+app.put('/:id', mdAutenticacion.verificarToken,  (req, res ) => { 
   var id = req.params['id'];
   var body = req.body;
  
-  UsuarioSchema.findById(id,  (err, usuario) => {
+  HospitalSchema.findById(id,  (err, hospital) => {
    if( err){
      return res.status(500).json({
        ok: false,
-       mensaje: "Error al mostrar usuario",
+       mensaje: "Error al mostrar hospital",
        errors: err
      });
    }
  
-   if (!usuario) {
+   if (!hospital) {
      return res.status(400).json({
        ok: false,
-       mensaje: ` El usuario con id ${id} no exist`,
-       errors: {message:'No existe un usuario con el id indicado'}
+       mensaje: ` El hospital con id ${id} no exist`,
+       errors: {message:'No existe un hospital con el id indicado'}
      });
    }
  
-   usuario.nombre = body.nombre;
-   usuario.email = body.email;
-   usuario.role = body.role;
- 
-   usuario.save((err, usuarioActualizado) => {
+   hospital.nombre = body.nombre;
+   hospital.usuario =req.usuario._id;
+   
+   hospital.save((err, hospitalActualizado) => {
      if( err){
        return res.status(400).json({
          ok: false,
-         mensaje: "Error al actualizar usuario",
+         mensaje: "Error al actualizar hospital",
          errors: err
        });
      }
  
      res.status(200).json({
        ok: true,
-       usuario: usuarioActualizado
+       hospital: hospitalActualizado
      })
    })
   });
  });
 
-// crear un nuevo usuario
+ // crear un nuevo hospital
 app.post('/', mdAutenticacion.verificarToken, (req, res, next) => {
 
   var body = req.body; // hago uso de la prop body solo poque estoy usuando bodyparser
 
-  var usuarioActual = new UsuarioSchema({
+  var hospitalActual = new HospitalSchema({
     nombre: body.nombre,
-    email: body.email,
-    password: bcrypt.hashSync(body.password, 10),
-    img: body.img,
-    role: body.role
+    usuario: req.usuario._id
   });
 
-  usuarioActual.save((err, usuarioNew ) => {
+  hospitalActual.save((err, hospitalNuevo ) => {
     if (err) {
      return res.status(400).json({
         ok: false,
-        mensaje :'Error al crear el usuario',
+        mensaje :'Error al crear el Hospital',
         error: err
       });
     }
     
     res.status(201).json({
       ok: true,
-      usuario: usuarioNew,
-      usuarioToken: req.usuario
+      hospital: hospitalNuevo,
     });
     
   })
 
 })
 
-// Eliminar un usuario
+// Eliminar un Hospital
 app.delete('/:id', mdAutenticacion.verificarToken, (req, res) => {
   var id = req.params['id'];
-  UsuarioSchema.findByIdAndRemove(id, (err, usuarioEliminado) => {
+  HospitalSchema.findByIdAndRemove(id, (err, hospitalEliminado) => {
     if( err){
       return res.status(400).json({
         ok: false,
-        mensaje: "Error al eliminar usuario",
+        mensaje: "Error al eliminar hospital",
         errors: err
       });
     }
 
     res.status(200).json({
       ok: true,
-      usuario: usuarioEliminado
+      hospital: hospitalEliminado
     })
   });
 })
+
+
 module.exports = app;
