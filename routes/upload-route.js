@@ -12,9 +12,10 @@ const fs = require('fs');
 app.use(fileUpload());
 
 
-app.put('/:tipo/:idUsuario', (req, res, next) => {
+app.put('/:tipo/:id', (req, res, next) => {
   const tipo = req.params.tipo;
-  const idUsuario = req.params.idUsuario;
+  const id = req.params.id;
+console.log(`los datos que llegan tipo ${tipo} id ${id} `);
 
   if (!req.files) {
     res.status(400).json({
@@ -51,8 +52,8 @@ app.put('/:tipo/:idUsuario', (req, res, next) => {
     }
 
   //3-  Creo un nombre de archivo personalizado de la siguiente forma
-  // idUsuario-numeroRamdon.extension
-  const nombreArchivo = `${idUsuario}-${new Date().getMilliseconds()}.${extensionArchivo}`;
+  // id-numeroRamdon.extension
+  const nombreArchivo = `${id}-${new Date().getMilliseconds()}.${extensionArchivo}`;
   
   //4-  Muevo el archivo del temporal a un path
     const path = `./uploads/${tipo}/${nombreArchivo}`
@@ -64,15 +65,21 @@ app.put('/:tipo/:idUsuario', (req, res, next) => {
           errors: {message: 'Ocurrio un error al mover el archivo'}
         })
       }
-      subirPorTipo(tipo, idUsuario, nombreArchivo, res)
-/*      */
+      subirPorTipo(tipo, id, nombreArchivo, res)
     })
 })
 
-function subirPorTipo(tipo, idUsuario, nombreArchivo, res){
+function subirPorTipo(tipo, id, nombreArchivo, res){
   if( tipo === 'usuarios'){
-    UsuarioSchema.findById(idUsuario, (err, usuario) => {
+    UsuarioSchema.findById(id, (err, usuario) => {
       // ToDo manejar el error 
+      if (!usuario) {
+        return res.status(400).json({
+          ok: false,
+          message: 'Usuario no existe',
+          errors: {message:'Usuario no existe !!!'}  
+        })
+      }
 
        var pathViejo = './uploads/usuarios/'+usuario.img;
 
@@ -102,6 +109,87 @@ function subirPorTipo(tipo, idUsuario, nombreArchivo, res){
 
     })
 
-  }// end if
+  }// end if usuarios
+
+  if( tipo === 'hospitales'){
+    HospitalSchema.findById(id, (err, hospital) => {
+      // ToDo manejar el error 
+      if (!hospital) {
+        return res.status(400).json({
+          ok: false,
+          message: 'Hospital no existe',
+          errors: {message:'Hospital no existe !!!'}  
+        })
+      }
+       var pathViejo = './uploads/hospitales/'+hospital.img;
+
+       // si existe, eliminar la imagen anterior
+
+       if(fs.existsSync(pathViejo)){
+         
+         fs.unlink(pathViejo, (err) => {
+           if(err){
+             console.log('ha ocurrido un error al eliminar el archivo');
+              }
+         });
+       }
+
+       hospital.img = nombreArchivo;
+
+        hospital.save((err, hospitalActualizado) => {
+         // ToDo manejar el erro 
+
+        return res.status(200).json({
+          ok: true,
+          mensaje: 'Imagen de hospital actualizada!!',
+          hospital: hospitalActualizado
+        })  
+
+       })
+
+    })
+
+  }// end if hospitales
+
+  if( tipo === 'medicos'){
+    MedicoSchema.findById(id, (err, medico) => {
+      // ToDo manejar el error 
+      if (!medico) {
+        return res.status(400).json({
+          ok: false,
+          message: 'medico no existe',
+          errors: {message:'medico no existe !!!'}  
+        })
+      }
+       var pathViejo = './uploads/medicos/'+medico.img;
+
+       // si existe, eliminar la imagen anterior
+
+       if(fs.existsSync(pathViejo)){
+         
+         fs.unlink(pathViejo, (err) => {
+           if(err){
+             console.log('ha ocurrido un error al eliminar el archivo');
+              }
+         });
+       }
+
+       medico.img = nombreArchivo;
+
+        medico.save((err, medicoActualizado) => {
+         // ToDo manejar el erro 
+
+        return res.status(200).json({
+          ok: true,
+          mensaje: 'Imagen de medico actualizada!!',
+          medico: medicoActualizado
+        })  
+
+       })
+
+    })
+
+  }// end if medicos
+
 }// end funcion subirPorTipo
 module.exports = app;

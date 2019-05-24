@@ -29,6 +29,7 @@ var hospitalRoutes = require('./routes/hospital-route');
 var medicoRoutes = require('./routes/medico-route');
 var busquedaGeneralRoutes = require('./routes/busqueda-general-route');
 var uploadFile = require('./routes/upload-route');
+const imagenRoute = require('./routes/imagen-route');
 
 
 // Middleware
@@ -38,7 +39,10 @@ app.use('/busqueda', busquedaGeneralRoutes);
 app.use('/upload', uploadFile);
 app.use('/medico', medicoRoutes);
 app.use('/login', loginRoutes);
+app.use('/img', imagenRoute);
 app.use('/', appRoutes); 
+
+// Server index context
 
 // escuchar peticiones
 app.listen(3000, () => {
