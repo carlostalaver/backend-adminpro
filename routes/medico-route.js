@@ -35,6 +35,39 @@ app.get("/",  (req, res, next) => {
   });
 });
 
+// Obtener un medico por id
+app.get("/:id", (req, res, next) => {
+  const id = req.params.id;
+
+  MedicoSchema.findById(id)
+    .populate("hospital")
+    .populate("usuario")
+    .exec((err, medico) => {
+      if (err) {
+        return res.status(500).json({
+          ok: false,
+          mensaje: "Error al obtener los datos del medico",
+          errors: err
+        });
+      }
+
+      if (!medico) {
+        return res.status(400).json({
+          ok: false,
+          mensaje: `El medico con id ${id} no existe !!!`,
+          errors: {
+            message: "no existe un registro de medico con el id en la  BBDD"
+          }
+        });
+      }
+      
+      res.status(200).json({
+        ok: true,
+        medico: medico
+      });
+    });
+});
+
 // Actualizar Hospital
 app.put('/:id', mdAutenticacion.verificarToken,  (req, res ) => { 
   var id = req.params['id'];
