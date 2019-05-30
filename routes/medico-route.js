@@ -12,10 +12,10 @@ app.get("/",  (req, res, next) => {
   inicio = Number(inicio);
 
   MedicoSchema.find({})
-  .skip(inicio) // para que retorne desde el valor indicado
-  .limit(5) // retornara de 5 en 5
   .populate('usuario', 'nombre email')
   .populate('hospital')
+  .limit(5) // retornara de 5 en 5
+  .skip(inicio) // para que retorne desde el valor indicado
   .exec((err, medicos) => {
     if (err) {
       return res.status(500).json({
@@ -100,7 +100,7 @@ app.post('/', mdAutenticacion.verificarToken, (req, res, next) => {
     
     res.status(201).json({
       ok: true,
-      hospital: medicoNuevo,
+      medico: medicoNuevo,
     });
     
   })

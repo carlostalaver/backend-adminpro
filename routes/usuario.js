@@ -14,7 +14,7 @@ app.get("/", (req, res, next) => {
   var inicio = req.query.inicio || 0;
   inicio = Number(inicio);
 
-  UsuarioSchema.find({}, "nombre email img role")
+  UsuarioSchema.find({}, "nombre email img role google")
   .skip(inicio) // para que retorne desde el valor indicado
   .limit(5) // retornara de 5 en 5
   .exec((err, usuarios) => {
@@ -82,7 +82,7 @@ app.put('/:id', mdAutenticacion.verificarToken, (req, res ) => {
  });
 
 // crear un nuevo usuario
-app.post('/', mdAutenticacion.verificarToken, (req, res, next) => {
+app.post('/', /* mdAutenticacion.verificarToken, */ (req, res, next) => {
 
   var body = req.body; // hago uso de la prop body solo poque estoy usuando bodyparser
 

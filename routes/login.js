@@ -42,7 +42,6 @@ app.post('/google', async (req, res) => {
   
    UsuarioSchema.findOne({email: googleUser.email}, (err, usuarioBD) => {
 
-    console.log('el usuario de la base de datos es ', usuarioBD);
     
       if( err) {
         return res.status(500).json({
@@ -101,7 +100,8 @@ app.post('/google', async (req, res) => {
 // autenticacion NORMAL
 app.post("/", (req, res) => {
   var body = req.body;
-
+  console.log(' --->  los datos que llegan del front', body);
+  
   UsuarioSchema.findOne({ email: body.email }, (err, usuarioBD) => {
     if (err) {
       return res.status(500).json({

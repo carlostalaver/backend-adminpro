@@ -25,7 +25,7 @@ app.get("/coleccion/:tabla/:busqueda", (req, res, next) => {
     default:
      return res.status(404).json({
        ok: false,
-       message: 'Los tipos de busqueda solo son, Usuario, Medico y Hospital',
+       message: 'Los tipos de busqueda solo son, usuarios, medicos y hospitales',
        error: {message: 'Tipo de tabla/coleccion no valida'}
      })
   }
