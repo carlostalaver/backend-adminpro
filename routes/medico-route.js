@@ -12,7 +12,7 @@ app.get("/",  (req, res, next) => {
   inicio = Number(inicio);
 
   MedicoSchema.find({})
-  .populate('usuario', 'nombre email')
+  .populate('usuario', 'nombre email img')
   .populate('hospital')
   .limit(5) // retornara de 5 en 5
   .skip(inicio) // para que retorne desde el valor indicado

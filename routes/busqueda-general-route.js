@@ -59,7 +59,7 @@ app.get("/todo/:busqueda", (req, res, next) => {
 function burcarHospitales(busqueda, regex) {
   return new Promise((resolve, reject) => {
     HospitalSchema.find({ nombre: regex })
-      .populate("usuario", "nombre email")
+      .populate("usuario", "nombre email img")
       .exec((err, hospitales) => {
         if (err) {
           reject("Error al cargar hospitales", err);
@@ -73,7 +73,7 @@ function burcarHospitales(busqueda, regex) {
 function burcarMedicos(busqueda, regex) {
   return new Promise((resolve, reject) => {
     MedicoSchema.find({ nombre: regex })
-      .populate("usuario", " nombre email")
+      .populate("usuario", " nombre email img")
       .populate("hospital", "nombre")
       .exec((err, medicos) => {
         if (err) {
@@ -88,7 +88,7 @@ function burcarMedicos(busqueda, regex) {
 // retorna una promesa con los usuarios
 function burcarUsuarios(busqueda, regex) {
   return new Promise((resolve, reject) => {
-    UsuarioSchema.find({}, "nombre email role")
+    UsuarioSchema.find({}, "nombre email role img")
       .or([{ nombre: regex }, { email: regex }])
       .exec((err, usuarios) => {
         if (err) {
